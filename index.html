@@ -121,6 +121,9 @@
                 resultContainer.classList.add('hidden');
                 errorContainer.classList.add('hidden');
                 
+                const submitButton = form.querySelector('button[type="submit"]');
+                const originalText = submitButton.innerHTML; // 将这一行移到try块外面
+                
                 try {
                     const num1 = parseFloat(document.getElementById('num1').value);
                     const num2 = parseFloat(document.getElementById('num2').value);
@@ -129,8 +132,6 @@
                         throw new Error('请输入有效的数字');
                     }
                     
-                    const submitButton = form.querySelector('button[type="submit"]');
-                    const originalText = submitButton.innerHTML;
                     submitButton.disabled = true;
                     submitButton.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 计算中...';
                     
@@ -174,7 +175,6 @@
                     }, 500);
                     
                 } finally {
-                    const submitButton = form.querySelector('button[type="submit"]');
                     submitButton.disabled = false;
                     submitButton.innerHTML = originalText;
                 }
@@ -195,4 +195,4 @@
         });
     </script>
 </body>
-</html>    
+</html> 
