@@ -7,29 +7,44 @@
 python文件接口：
 
 @app.route('/')
+
 def index():
+
     return render_template('index.html')
     
 返回 index.html 页面，用于展示加法计算器的前端界面
 
 @app.route('/add', methods=['POST'])
+
 def add_numbers():
+
     data = request.get_json()
+    
 ...
+
     return jsonify({'sum': result})
     
 接收两个数字，将它们进行处理并返回结果。
 前端HTML文件接口：
 
 const response = await fetch('/add', {
+
                 method: 'POST',
+                
                 headers: {
+                
                     'Content-Type': 'application/json'
+                    
                 },
+                
                 body: JSON.stringify({
+                
                     num1: num1,
+                    
                     num2: num2
+                    
                 })
+                
             });
             
 使用 fetch API 向 /add 接口发送 POST 请求，将用户输入的数字作为 JSON 数据发送。
@@ -42,26 +57,41 @@ const data = await response.json();
 在python代码中，引用try语句判断：
 
  try:
+ 
         num1 = float(num1)
+        
         num2 = float(num2)
+        
     except ValueError:
+    
         return jsonify({'error': '输入必须是数字'}), 400
         
 在HTML代码中，结合try和if语句：
 
 try {
+
         const num1 = parseFloat(document.getElementById('num1').value);
+        
         const num2 = parseFloat(document.getElementById('num2').value);
         
-        if (isNaN(num1) || isNaN(num2)) {
+        
+        if (isNaN(num1) || isNaN(num2)) 
+        
+        {
+        
             throw new Error('请输入有效的数字');
+            
         }
 
   在接收信息时，如果出现通信异常，则显示:
   
-    if (!response.ok) {
+    if (!response.ok) 
+    
+    {
+    
             throw new Error(`服务器错误: ${response.status}`);
-        }
+            
+    }
 
 
 
