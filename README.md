@@ -1,4 +1,4 @@
-# 加法器
+# 计算器
 完成软件工程作业专用
 
 版本1.0
@@ -93,6 +93,60 @@ try {
             
     }
 
+
+版本1.2
+新增接口乘法。
+针对python代码：
+
+@app.route('/multiply', methods=['POST'])
+
+def multiply_numbers():
+
+    data = request.get_json()
+    
+    num1 = data.get('num1', 0)
+    
+    num2 = data.get('num2', 0)
+    
+    
+    # 验证输入是否为数字
+    
+    try:
+    
+        num1 = float(num1)
+        
+        num2 = float(num2)
+        
+    except ValueError:
+    
+        return jsonify({'error': '输入必须是数字'}), 400
+        
+    
+    result = num1 * num2
+    
+    return jsonify({'result': result})
+
+将返回值进行统一处理，改为result
+
+HTML代码：新增按键乘法：
+
+<button type="button" id="multiplyButton"
+    
+    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg 
+    
+    text-white bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 focus:outline-none focus:ring-2 
+    
+    focus:ring-offset-2 focus:ring-primary transition-all duration-300 transform hover:-translate-y-1">
+    
+    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+    
+        <i class="fa fa-times-circle group-hover:translate-x-1 transition-transform duration-300"></i>
+        
+    </span>
+    
+    乘法计算
+    
+</button>
 
 
 
