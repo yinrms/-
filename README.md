@@ -152,7 +152,94 @@ HTML代码：新增按键乘法：
 
 # 版本1.3
 
+原始版本对于新设备会出现URL不适配的问题，现对其进行修复工作。
+连接问题修复：
+问题1：后端服务器未启动或端口冲突
+原因：如果 Flask 服务器没有运行，或者运行在不同的端口上，前端请求会失败
 
+对app.py进行以下修改：
+
+    from flask import Flask, render_template, request, jsonify
+
+    from flask_cors import CORS  # 新增导入
+
+    app = Flask(__name__)
+
+    CORS(app)  # 启用 CORS
+
+问题2：前端请求 URL 错误
+原因：JavaScript 代码中请求的 URL 可能与后端路由不匹配。
+确保前端代码中的 URL 与后端路由一致，代码修改如下：
+    
+    # 修改 performCalculation 函数中的 URL
+    
+    fetch(`http://localhost:5000${url}`, { ... })
+
+调整后的代码：
+    
+    from flask import Flask, render_template, request, jsonify
+    
+    from flask_cors import CORS  # 新增导入
+    
+    app = Flask(__name__)
+    
+    CORS(app)  # 启用 CORS
+    
+    @app.route('/')
+    
+    def index():
+        
+        return render_template('index.html')
+    
+    @app.route('/add', methods=['POST'])
+   
+    def add_numbers():
+        
+        data = request.get_json()
+        
+        num1 = data.get('num1', 0)
+        
+        num2 = data.get('num2', 0)
+        
+        try:
+            num1 = float(num1)
+            
+            num2 = float(num2)
+        
+        except ValueError:
+            
+            return jsonify({'error': '输入必须是数字'}), 400
+        
+        result = num1 + num2
+        
+        return jsonify({'result': result})
+    
+    @app.route('/multiply', methods=['POST'])
+    
+    def multiply_numbers():
+        
+        data = request.get_json()
+        
+        num1 = data.get('num1', 0)
+        
+        num2 = data.get('num2', 0)
+        
+        try:
+            num1 = float(num1)
+            
+            num2 = float(num2)
+        
+        except ValueError:
+            
+            return jsonify({'error': '输入必须是数字'}), 400
+        
+        result = num1 * num2
+        
+        return jsonify({'result': result})
+    
+    if __name__ == '__main__':
+       
+        app.run(debug=True)
 
 
 
