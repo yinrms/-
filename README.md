@@ -3,6 +3,12 @@
 
 演示视频为演示视频.mp4
 
+同时上传百度网盘：演示视频.mp4
+链接: https://pan.baidu.com/s/1xDQB_Qib_obzBCKVMCcLkQ 提取码: 7nkt
+
+夸克网盘：
+链接：https://pan.quark.cn/s/8a10c7681cd6
+
 # 版本1.0
 完成基本功能和接口对接，html文件将py文件作为api进行调用，在网页中调用py文件完成计算功能，返回计算结果到网页进行显示。
 接口说明：
