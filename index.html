@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>加法计算器</title>
+    <title>加法和乘法计算器</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
@@ -40,8 +40,8 @@
     <div class="container mx-auto px-4 py-12 max-w-md">
         <div class="bg-white rounded-2xl p-8 card-shadow transform transition-all duration-300 hover:scale-[1.02]">
             <div class="text-center mb-8">
-                <h1 class="text-[clamp(1.8rem,5vw,2.5rem)] font-bold text-gray-800 mb-2">加法计算器</h1>
-                <p class="text-gray-500 text-sm">输入两个数字，获取它们的和</p>
+                <h1 class="text-[clamp(1.8rem,5vw,2.5rem)] font-bold text-gray-800 mb-2">加法和乘法计算器</h1>
+                <p class="text-gray-500 text-sm">输入两个数字，进行加法或乘法运算</p>
             </div>
             
             <form id="calculatorForm" class="space-y-6">
@@ -69,12 +69,20 @@
                     </div>
                 </div>
                 
-                <button type="submit" 
+                <button type="button" id="addButton"
                     class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 transform hover:-translate-y-1">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3">
                         <i class="fa fa-calculator group-hover:translate-x-1 transition-transform duration-300"></i>
                     </span>
-                    计算
+                    加法计算
+                </button>
+
+                <button type="button" id="multiplyButton"
+                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 transform hover:-translate-y-1">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <i class="fa fa-times-circle group-hover:translate-x-1 transition-transform duration-300"></i>
+                    </span>
+                    乘法计算
                 </button>
                 
                 <div id="resultContainer" class="hidden">
@@ -103,7 +111,7 @@
         </div>
         
         <div class="mt-8 text-center text-gray-500 text-sm">
-            <p>© 2025 加法计算器 | 使用 Python Flask 构建</p>
+            <p>© 2025 加法和乘法计算器 | 使用 Python Flask 构建</p>
         </div>
     </div>
 
@@ -114,28 +122,29 @@
             const resultElement = document.getElementById('result');
             const errorContainer = document.getElementById('errorContainer');
             const errorMessage = document.getElementById('errorMessage');
-            
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
+            const addButton = document.getElementById('addButton');
+            const multiplyButton = document.getElementById('multiplyButton');
+
+            function performCalculation(url, operator) {
                 resultContainer.classList.add('hidden');
                 errorContainer.classList.add('hidden');
-                
+
+                const submitButton = document.activeElement;
+                const originalText = submitButton.innerHTML;
+
                 try {
                     const num1 = parseFloat(document.getElementById('num1').value);
                     const num2 = parseFloat(document.getElementById('num2').value);
-                    
+
                     if (isNaN(num1) || isNaN(num2)) {
                         throw new Error('请输入有效的数字');
                     }
-                    
-                    const submitButton = form.querySelector('button[type="submit"]');
-                    const originalText = submitButton.innerHTML;
+
                     submitButton.disabled = true;
                     submitButton.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 计算中...';
-                    
+
                     // 调用后端API
-                    const response = await fetch('/add', {
+                    fetch(url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -144,42 +153,58 @@
                             num1: num1,
                             num2: num2
                         })
+                    })
+                   .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`服务器错误: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                   .then(data => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+
+                        resultElement.textContent = `${num1} ${operator} ${num2} = ${data.result}`;
+                        resultContainer.classList.remove('hidden');
+
+                        resultElement.classList.add('animate-pulse');
+                        setTimeout(() => {
+                            resultElement.classList.remove('animate-pulse');
+                        }, 1000);
+                    })
+                   .catch(error => {
+                        errorMessage.textContent = error.message;
+                        errorContainer.classList.remove('hidden');
+
+                        errorContainer.classList.add('animate-shake');
+                        setTimeout(() => {
+                            errorContainer.classList.remove('animate-shake');
+                        }, 500);
+                    })
+                   .finally(() => {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalText;
                     });
-                    
-                    if (!response.ok) {
-                        throw new Error(`服务器错误: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    resultElement.textContent = `${num1} + ${num2} = ${data.sum}`;
-                    resultContainer.classList.remove('hidden');
-                    
-                    resultElement.classList.add('animate-pulse');
-                    setTimeout(() => {
-                        resultElement.classList.remove('animate-pulse');
-                    }, 1000);
-                    
                 } catch (error) {
                     errorMessage.textContent = error.message;
                     errorContainer.classList.remove('hidden');
-                    
+
                     errorContainer.classList.add('animate-shake');
                     setTimeout(() => {
                         errorContainer.classList.remove('animate-shake');
                     }, 500);
-                    
-                } finally {
-                    const submitButton = form.querySelector('button[type="submit"]');
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalText;
                 }
+            }
+
+            addButton.addEventListener('click', function() {
+                performCalculation('/add', '+');
             });
-            
+
+            multiplyButton.addEventListener('click', function() {
+                performCalculation('/multiply', '×');
+            });
+
             document.head.insertAdjacentHTML('beforeend', `
                 <style>
                     @keyframes shake {
@@ -195,4 +220,4 @@
         });
     </script>
 </body>
-</html>    
+</html> 
